@@ -1,0 +1,168 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage[top=10mm, bottom=20mm]{geometry}
+\usepackage{float}
+\usepackage{tikz}
+\usepackage{listings}
+\lstset{
+	language=bash,
+	basicstyle=\ttfamily
+}
+\newcommand{\sectionbreak}{\clearpage}
+
+
+\begin{document}
+	\include{titlepage}
+	Цель работы - сконфигурировать базу данных Oracle на выделенном сервере. В процессе конфигурации БД необходимо пользоваться только интерфейсом командной строки и утилитой SQLPlus; использовать графический установщик нельзя.
+	\section{Задание}
+	\textbf{Порядок конфигурации БД:}\\
+	\begin{enumerate}
+		\item Задать значения необходимых для конфигурации переменных окружения.
+		\item Задать метод аутентификации администратора (зависит от варианта).
+		\item Создать конфигурационные файлы, необходимые для инициализации и запуска экземпляра Oracle.
+		\item Запустить экземпляр Oracle.
+		\item Создать новую базу данных (параметры конфигурации зависят от варианта).
+		\item Создать дополнительные табличные пространства (определяются вариантом).
+		\item Сформировать представления словаря данных.
+	\end{enumerate}
+	
+	\textbf{Параметры конфигурации Oracle:}\\
+	\begin{itemize}
+		\item Имя узла: \texttt{db161}.
+		\item Точка монтирования: \texttt{/u01/huk07}.
+		\item SID: \texttt{\$surname\$name\$groupnumber}, где \texttt{\$surname, \$name} и \texttt{\$groupnumber} - фамилия, имя студента (транслитом) и номер группы.
+		\item Метод аутентификации администратора БД: пароль.
+		\item Имя БД: \texttt{wetlaw}.
+		\item Размер блока данных: 8192 байт.
+		\item Размер SGA: 640 МБ.
+		\item Кодировка: UTF-8.
+		\item Файлы данных табличного пространства SYSTEM:
+		\begin{itemize}
+			\item \texttt{\$ORADATA/node01/oluke5.dbf.}
+			\item \texttt{\$ORADATA/node01/omozo48.dbf.}
+		\end{itemize}
+		\item Файлы данных табличного пространства SYSAUX:
+		\texttt{\$ORADATA/node02/fug40.dbf.}
+		\item Файлы данных табличного пространства USERS:
+		\texttt{\$ORADATA/node02/ayetohi361.dbf.}
+		\item Файлы данных дополнительных табличных пространств:
+		\begin{itemize}
+			\item \texttt{GOOD\_WHITE\_BIRD:
+			\$ORADATA/node04/goodwhitebird01.dbf,
+			\$ORADATA/node01/goodwhitebird02.dbf,
+			\$ORADATA/node04/goodwhitebird03.dbf.
+			\item BUSY\_YELLOW\_DATA:
+			\$ORADATA/node01/busyyellowdata01.dbf,
+			\$ORADATA/node04/busyyellowdata02.dbf,
+			\$ORADATA/node04/busyyellowdata03.dbf,
+			\$ORADATA/node01/busyyellowdata04.dbf.
+			\item DRY\_BROWN\_OVEN:
+			\$ORADATA/node04/drybrownoven01.dbf.}
+		\end{itemize}
+	\end{itemize}
+
+	\section{Выполнение}
+	\texttt{\textbf{init.sh}}\\
+	\begin{lstlisting}
+#!/bin/sh
+export ORACLE_SID="tcheprasovaelenap3402"
+export ORACLE_HOME="/u01/app/oracle/product/11.2.0/dbhome_1"
+export PATH=${PATH}:${ORACLE_HOME}/bin
+export NLS_LANG="AMERICAN_AMERICA.UTF8"
+export ORADATA="/u01/huk07/wetlaw"
+
+if [ ! -e "$ORADATA" ]; then
+	mkdir -p "$ORADATA"
+	mkdir "$ORADATA/node01"
+	mkdir "$ORADATA/node02"
+	mkdir "$ORADATA/node03"
+	mkdir "$ORADATA/node04"
+	mkdir "$ORADATA/flash_recovery_area"
+fi
+
+cp "init$ORACLE_SID.ora" "$ORACLE_HOME/dbs/"
+sqlplus /nolog @create_db.sql
+	\end{lstlisting}
+	\vspace{2.7cm}
+	\textbf{\texttt{inittcheprasovap3402.ora}}\\
+	\begin{lstlisting}
+DB_NAME = "wetlaw"
+DB_BLOCK_SIZE=8192
+SGA_MAX_SIZE=640M
+DB_RECOVERY_FILE_DEST="/u01/huk07/wetlaw/flash_recovery_area"
+DB_RECOVERY_FILE_DEST_SIZE=200M
+CONTROL_FILES=(/u01/huk07/wetlaw/ora_control1.ctl, /u01/huk07/wetlaw/ora_control2.ctl)
+REMOTE_LOGIN_PASSWORDFILE=NONE
+REMOTE_OS_AUTHENT=TRUE
+OS_AUTHENT_PREFIX=NULL
+	\end{lstlisting}
+	\vspace{2.7cm}
+	\texttt{\textbf{create\_db.sql}}\\
+	\begin{lstlisting}
+CONNECT / AS SYSDBA
+CREATE SPFILE FROM PFILE = 'inittcheprasovaelenap3402.ora';
+STARTUP NOMOUNT;
+
+CREATE DATABASE wetlaw
+	LOGFILE	
+		GROUP 1
+			('/u01/huk07/wetlaw/ora_control1.log')	
+			SIZE 100M,
+		GROUP 2 
+			('/u01/huk07/wetlaw/ora_control2.log')
+			SIZE 100M
+	CHARACTER SET AL32UTF8
+	NATIONAL CHARACTER SET AL16UTF16
+	DATAFILE 
+		'/u01/huk07/wetlaw/node01/oluke5.dbf'
+			SIZE 150M REUSE 
+			AUTOEXTEND ON MAXSIZE UNLIMITED,
+		'/u01/huk07/wetlaw/node01/omozo48.dbf'
+			SIZE 150M REUSE 
+			AUTOEXTEND ON MAXSIZE UNLIMITED
+	SYSAUX DATAFILE 
+		'/u01/huk07/wetlaw/node02/fug40.dbf'
+		SIZE 150M 
+		REUSE AUTOEXTEND ON MAXSIZE UNLIMITED
+	DEFAULT TABLESPACE users DATAFILE
+		'/u01/huk07/wetlaw/node02/ayetohi361.dbf'
+		SIZE 100M 
+		REUSE AUTOEXTEND ON MAXSIZE UNLIMITED
+	UNDO TABLESPACE undotbs1 DATAFILE
+		'/u01/huk07/wetlaw/node02/undotbs.dbf'
+		SIZE 100M REUSE AUTOEXTEND ON
+		MAXSIZE UNLIMITED;
+
+CREATE TABLESPACE GOOD_WHITE_BIRD DATAFILE
+	'/u01/huk07/wetlaw/node04/goodwhitebird01.dbf'
+	SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED,
+	'/u01/huk07/wetlaw/node01/goodwhitebird02.dbf'
+	SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED,
+	'/u01/huk07/wetlaw/node04/goodwhitebird03.dbf'
+	SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED;
+
+CREATE TABLESPACE BUSY_YELLOW_DATA DATAFILE
+	'/u01/huk07/wetlaw/node01/busyyellowdata01.dbf'
+		SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED,
+	'/u01/huk07/wetlaw/node04/busyyellowdata02.dbf' 
+		SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED,
+	'/u01/huk07/wetlaw/node04/busyyellowdata03.dbf'
+		SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED,
+	'/u01/huk07/wetlaw/node01/busyyellowdata04.dbf'
+		SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED;
+
+CREATE TABLESPACE DRY_BROWN_OVEN DATAFILE
+	'/u01/huk07/wetlaw/node04/drybrownoven01.dbf' 
+	SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED;
+
+@?/rdbms/admin/catalog.sql
+@?/rdbms/admin/catproc.sql
+@?/sqlplus/admin/pupbld.sql
+\end{lstlisting}
+	
+	\section{Выводы}
+	В ходе выполнения данной лабораторной работы был получен опыт настройки базы данных Oracle.
+	
+\end{document}

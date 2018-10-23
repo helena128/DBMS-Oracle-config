@@ -2,12 +2,6 @@ CONNECT / AS SYSDBA
 CREATE SPFILE FROM PFILE = 'inittcheprasovaelenap3402.ora';
 STARTUP NOMOUNT;
 
--- OS AUTHENTICATION
---ALTER SYSTEM SET REMOTE_OS_AUTHENT=TRUE SCOPE=SPFILE;
-
--- Change prefix
---set os_authent_prefix = "" scope = spfile;
-
 CREATE DATABASE wetlaw
 	LOGFILE GROUP 1 ('/u01/huk07/wetlaw/ora_control1.log') SIZE 100M,
 			GROUP 2 ('/u01/huk07/wetlaw/ora_control2.log') SIZE 100M
@@ -23,9 +17,9 @@ CREATE DATABASE wetlaw
 	UNDO TABLESPACE undotbs1 DATAFILE '/u01/huk07/wetlaw/node02/undotbs.dbf'
 		SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED;
 CREATE TABLESPACE GOOD_WHITE_BIRD DATAFILE
-	'/u01/huk07/wetlaw/goodwhitebird01.dbf' SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED,
-	'/u01/huk07/wetlaw/goodwhitebird02.dbf' SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED,
-	'/u01/huk07/wetlaw/goodwhitebird03.dbf' SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED;
+	'/u01/huk07/wetlaw/node04/goodwhitebird01.dbf' SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED,
+	'/u01/huk07/wetlaw/node01/goodwhitebird02.dbf' SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED,
+	'/u01/huk07/wetlaw/node04/goodwhitebird03.dbf' SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED;
 
 CREATE TABLESPACE BUSY_YELLOW_DATA DATAFILE
 	'/u01/huk07/wetlaw/node01/busyyellowdata01.dbf' SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED,
@@ -36,3 +30,7 @@ CREATE TABLESPACE BUSY_YELLOW_DATA DATAFILE
 CREATE TABLESPACE DRY_BROWN_OVEN DATAFILE
 	'/u01/huk07/wetlaw/node04/drybrownoven01.dbf' 
 	SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED;
+
+@?/rdbms/admin/catalog.sql
+@?/rdbms/admin/catproc.sql
+@?/sqlplus/admin/pupbld.sql
