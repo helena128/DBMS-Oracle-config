@@ -3,4 +3,4 @@ DB_BLOCK_SIZE=8192
 SGA_MAX_SIZE=640M
 DB_RECOVERY_FILE_DEST="/u01/huk07/wetlaw/flash_recovery_area"
 DB_RECOVERY_FILE_DEST_SIZE=200M
-CONTROL_FILES=(/u01/hek07/wetlaw/ora_control1.ctl, /u01/hek07/wetlaw/ora_control2.ctl)
+CONTROL_FILES=(/u01/huk07/wetlaw/ora_control1.ctl, /u01/huk07/wetlaw/ora_control2.ctl)

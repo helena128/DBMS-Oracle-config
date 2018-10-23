@@ -9,39 +9,30 @@ STARTUP NOMOUNT;
 --set os_authent_prefix = "" scope = spfile;
 
 CREATE DATABASE wetlaw
-	-- not comprehensive
-	USER SYS IDENTIFIED BY 123
-	USER SYSTEM IDENTIFIED BY 123
-
-	-- character set
+	LOGFILE GROUP 1 ('/u01/huk07/wetlaw/ora_control1.log') SIZE 100M,
+			GROUP 2 ('/u01/huk07/wetlaw/ora_control2.log') SIZE 100M
 	CHARACTER SET AL32UTF8
 	NATIONAL CHARACTER SET AL16UTF16
-
-	-- system tablespace
 	DATAFILE 
-		'/u01/hek07/wetlaw/node01/oluke5.dbf' SIZE 150M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED,
-		'/u01/hek07/wetlaw/node01/omozo48.dbf' SIZE 150M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED
-
-	-- sysaux tablespace
-	SYSAUX DATAFILE '/u01/hek07/wetlaw/node02/fug40.dbf'
+		'/u01/huk07/wetlaw/node01/oluke5.dbf' SIZE 150M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED,
+		'/u01/huk07/wetlaw/node01/omozo48.dbf' SIZE 150M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED
+	SYSAUX DATAFILE '/u01/huk07/wetlaw/node02/fug40.dbf'
 		SIZE 150M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED
-
-	-- users tablespace
-	DEFAULT TABLESPACE users DATAFILE '/u01/hek07/wetlaw/node02/ayetohi361.dbf'
+	DEFAULT TABLESPACE users DATAFILE '/u01/huk07/wetlaw/node02/ayetohi361.dbf'
+		SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED
+	UNDO TABLESPACE undotbs1 DATAFILE '/u01/huk07/wetlaw/node02/undotbs.dbf'
 		SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED;
-
--- tablespaces according to variant
 CREATE TABLESPACE GOOD_WHITE_BIRD DATAFILE
-	'/u01/hek07/wetlaw/goodwhitebird01.dbf' SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED,
-	'/u01/hek07/wetlaw/goodwhitebird02.dbf' SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED,
-	'/u01/hek07/wetlaw/goodwhitebird03.dbf' SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED;
+	'/u01/huk07/wetlaw/goodwhitebird01.dbf' SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED,
+	'/u01/huk07/wetlaw/goodwhitebird02.dbf' SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED,
+	'/u01/huk07/wetlaw/goodwhitebird03.dbf' SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED;
 
 CREATE TABLESPACE BUSY_YELLOW_DATA DATAFILE
-	'/u01/hek07/wetlaw/node01/busyyellowdata01.dbf' SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED,
-	'/u01/hek07/wetlaw/node04/busyyellowdata02.dbf' SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED,
-	'/u01/hek07/wetlaw/node04/busyyellowdata03.dbf' SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED,
-	'/u01/hek07/wetlaw/node01/busyyellowdata04.dbf' SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED;
+	'/u01/huk07/wetlaw/node01/busyyellowdata01.dbf' SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED,
+	'/u01/huk07/wetlaw/node04/busyyellowdata02.dbf' SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED,
+	'/u01/huk07/wetlaw/node04/busyyellowdata03.dbf' SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED,
+	'/u01/huk07/wetlaw/node01/busyyellowdata04.dbf' SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED;
 
 CREATE TABLESPACE DRY_BROWN_OVEN DATAFILE
-	'/u01/hek07/wetlaw/node04/drybrownoven01.dbf' 
+	'/u01/huk07/wetlaw/node04/drybrownoven01.dbf' 
 	SIZE 100M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED;

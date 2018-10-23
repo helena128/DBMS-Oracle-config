@@ -15,5 +15,5 @@ if [ ! -e "$ORADATA" ]; then
 	mkdir "$ORADATA/flash_recovery_area"
 fi
 
-cp "init$ORACLE_SID.ora" "$ORACLE_HOME/dbs/"
-sqlplus /nolog @create_db.sql
+sudo cp "init$ORACLE_SID.ora" "$ORACLE_HOME/dbs/"
+#sqlplus /nolog @create_db.sql
